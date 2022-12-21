@@ -1,27 +1,40 @@
 t=0
-w=240
-h=136
+W=240
+H=136
 
-x=5
-y=5
+cx=5
+cy=5
 
-map={}
+mapc={}
+maph={}
 
 function BOOT()
   for y=1,10 do
-    r={}
+    c={}
+    h={}
     for x=1,10 do
-      r[x]=(math.random()*2) + 5
+      c[x]=(math.random()*2) + 5
+      h[x]=math.abs(math.cos((x+y)/(math.pi/1))*2//1)
     end
-    map[y]=r
+    mapc[y]=c
+    maph[y]=h
   end
 end
 
-function tile(x, y, c)
+function tile(x, y, h, c)
   hs=10
   vs=5
-  xo=(w/2)+(x*hs)-(y*hs)
-  yo=h-(10+(x*vs)+(y*vs))
+  ds=5
+  xo=(W/2)+(x*hs)-(y*hs)
+  --yo=H-(10+(x*vs)+(y*vs)+(h*ds))
+  yb=H-(10+(x*vs)+(y*vs))
+  yo=yb-(h*ds)
+  if h==0 then 
+    c=5+c
+  end
+  if x==cx and y==cy then
+    c=2
+  end
 
   tri(
     xo, yo+vs,
@@ -35,28 +48,66 @@ function tile(x, y, c)
     xo+hs, yo,
     c
   )
+  if yo~=yb then
+	  tri(
+	    xo-hs,yo,
+	    xo-hs,yb,
+	    xo,yb+vs,
+	    13
+	  )
+			tri(
+			  xo-hs,yo,
+			  xo,yo+vs,
+					xo,yb+vs,
+					13
+			)
+			tri(
+			  xo+hs,yo,
+					xo+hs,yb,
+					xo,yb+vs,
+					14
+			)
+			tri(
+			  xo+hs,yo,
+			  xo,yo+vs,
+					xo,yb+vs,
+					14
+			)
+  end
 end
 
-function drawgrid(x,y)
-  for y=1,#map do
-    r = map[y]
-    for x=1,#r do
-      tile(x,y,r[x])
+function drawgrid()
+  for y=#mapc,1,-1 do
+    c=mapc[y]
+    h=maph[y]
+    if c then 
+      for x=#c,1,-1 do
+        tile(x,y,h[x],c[x])
+      end
     end
   end
-  tile(x,y,11)
 end
 
 function TIC()
 
  if t%10==0 then 
-  	if btn(0) then y=y+1 end
-	  if btn(1) then y=y-1 end
-	  if btn(2) then x=x-1 end
-	  if btn(3) then x=x+1 end
+  	if btn(0) then cy=cy+1 end
+	  if btn(1) then cy=cy-1 end
+	  if btn(2) then cx=cx-1 end
+	  if btn(3) then cx=cx+1 end
+			if key(18) then
+			  cx=5
+					cy=5
+			end
+			if cx<1 then cx=1 end
+			if cy<1 then cy=1 end
+			if cx>10 then cx=10 end
+			if cy>10 then cy=10 end
+			
 			
   	cls(0)
-	  drawgrid(x,y)
+	  drawgrid()
+			print(tostring(cx)..', '..tostring(cy), 10, 10, 11)
  end
  
  t=t+1
