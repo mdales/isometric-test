@@ -2,17 +2,17 @@ t=0
 W=240
 H=136
 
-cx=5
-cy=5
+cx=50
+cy=50
 
 mapc={}
 maph={}
 
 function BOOT()
-  for y=1,10 do
+  for y=1,100 do
     c={}
     h={}
-    for x=1,10 do
+    for x=1,100 do
       c[x]=(math.random()*2) + 5
       h[x]=math.abs(math.cos((x+y)/(math.pi/1))*2//1)
     end
@@ -22,17 +22,17 @@ function BOOT()
 end
 
 function tile(x, y, h, c)
+  player=x==5 and y==5
   hs=10
   vs=5
-  ds=5
+  ds=3
   xo=(W/2)+(x*hs)-(y*hs)
-  --yo=H-(10+(x*vs)+(y*vs)+(h*ds))
   yb=H-(10+(x*vs)+(y*vs))
   yo=yb-(h*ds)
   if h==0 then 
     c=5+c
   end
-  if x==cx and y==cy then
+  if player then
     c=2
   end
 
@@ -77,12 +77,12 @@ function tile(x, y, h, c)
 end
 
 function drawgrid()
-  for y=#mapc,1,-1 do
+  for y=cy+5,cy-5,-1 do
     c=mapc[y]
     h=maph[y]
     if c then 
-      for x=#c,1,-1 do
-        tile(x,y,h[x],c[x])
+      for x=cx+5,cx-5,-1 do
+        tile(x-cx+5,y-cy+5,h[x],c[x])
       end
     end
   end
@@ -96,13 +96,13 @@ function TIC()
 	  if btn(2) then cx=cx-1 end
 	  if btn(3) then cx=cx+1 end
 			if key(18) then
-			  cx=5
-					cy=5
+			  cx=50
+					cy=50
 			end
-			if cx<1 then cx=1 end
-			if cy<1 then cy=1 end
-			if cx>10 then cx=10 end
-			if cy>10 then cy=10 end
+			if cx<5 then cx=5 end
+			if cy<5 then cy=5 end
+			if cx>95 then cx=95 end
+			if cy>95 then cy=95 end
 			
 			
   	cls(0)
