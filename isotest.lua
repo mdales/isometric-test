@@ -14,7 +14,18 @@ function BOOT()
     h={}
     for x=1,100 do
       c[x]=(math.random()*2) + 5
-      h[x]=math.abs(math.cos((x+y)/(math.pi/1))*2//1)
+      h[x]=math.abs(
+        (
+          math.cos(
+            (x+y/2)/(math.pi/1)
+          )*2
+          +
+          math.sin(
+            (x/3+y/3)/(math.pi/2)
+          )*2
+        )
+        //1
+      )
     end
     mapc[y]=c
     maph[y]=h
