@@ -106,6 +106,15 @@ function TIC()
 	  if btn(1) then cy=cy-1 end
 	  if btn(2) then cx=cx-1 end
 	  if btn(3) then cx=cx+1 end
+			if key(5) then
+			  h=maph[cy][cx]
+					if h > 0 then h=h-1 end
+					maph[cy][cx]=h 
+			end
+			if key(17) then
+			  h=maph[cy][cx]
+					maph[cy][cx]=h+1 
+			end
 			if key(18) then
 			  cx=50
 					cy=50
