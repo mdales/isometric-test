@@ -26,6 +26,11 @@ function BOOT()
         )
         //1
       )
+      if h[x] > 0 then
+		      if math.random() < 0.1 then
+		        c[x]=7
+		      end
+		    end
     end
     mapc[y]=c
     maph[y]=h
@@ -46,7 +51,8 @@ function tile(x, y, h, c)
   if player then
     c=2
   end
-
+  tree=c==7
+  if tree then c=5 end
   tri(
     xo, yo+vs,
     xo-hs, yo,
@@ -84,6 +90,20 @@ function tile(x, y, h, c)
 					xo,yb+vs,
 					14
 			)
+			if tree then
+			  tri(
+					  xo,yo,
+							xo-3,yo-1,
+							xo,yo-10,
+							7
+					)
+			  tri(
+					  xo,yo,
+							xo+3,yo-1,
+							xo,yo-10,
+							7
+					)
+			end
   end
 end
 
@@ -101,11 +121,22 @@ end
 
 function TIC()
 
- if t%10==0 then 
-  	if btn(0) then cy=cy+1 end
-	  if btn(1) then cy=cy-1 end
-	  if btn(2) then cx=cx-1 end
-	  if btn(3) then cx=cx+1 end
+ if t%10==0 then
+   ox=cx
+   oy=cy
+  	if btn(0) then oy=oy+1 end
+	  if btn(1) then oy=oy-1 end
+	  if btn(2) then ox=ox-1 end
+	  if btn(3) then ox=ox+1 end
+			dh = math.abs(maph[cy][cx]-maph[oy][ox])
+			if (mapc[oy][ox] ~= 7) and 
+			   (dh <= 1) then
+						cx=ox
+						cy=oy
+						w=0
+			else
+			  w=1
+			end
 			if key(5) then
 			  h=maph[cy][cx]
 					if h > 0 then h=h-1 end
@@ -124,9 +155,8 @@ function TIC()
 			if cx>95 then cx=95 end
 			if cy>95 then cy=95 end
 			
-			
-  	cls(0)
-	  drawgrid()
+			if w==1 then cls(2) else cls(0) end
+  	drawgrid()
 			print(tostring(cx)..', '..tostring(cy), 10, 10, 11)
  end
  
