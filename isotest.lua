@@ -2,17 +2,20 @@ t=0
 W=240
 H=136
 
-cx=50
-cy=50
 
 mapc={}
 maph={}
+mapW=100
+mapH=100
+
+cx=mapW//2
+cy=mapH//2
 
 function BOOT()
-  for y=1,100 do
+  for y=1,mapH do
     c={}
     h={}
-    for x=1,100 do
+    for x=1,mapW do
       c[x]=(math.random()*2) + 5
       h[x]=math.abs(
         (
@@ -107,6 +110,26 @@ function tile(x, y, h, c)
   end
 end
 
+function drawmap()
+  mx=W//2
+  my=H//2
+  rectb(mx-mapW//2, my-mapH//2, mapW+2, mapH+2, 12)
+  for y=1,mapH do
+    row=mapc[y]
+    rowh=maph[y]
+    for x=1,mapW do
+      c=row[x]
+      if rowh[x] < 1 then c=5+c end
+      if x==cx and y==cy then c=2 end
+      pix(
+        x+(W-mapW)//2,
+        (mapH+(H-mapH)//2)-(y-1),
+        c
+      )
+    end
+  end
+end
+
 function drawgrid()
   for y=cy+5,cy-5,-1 do
     c=mapc[y]
@@ -147,8 +170,8 @@ function TIC()
 					maph[cy][cx]=h+1 
 			end
 			if key(18) then
-			  cx=50
-					cy=50
+			  cx=mapW//2
+					cy=mapH//2
 			end
 			if cx<5 then cx=5 end
 			if cy<5 then cy=5 end
@@ -157,6 +180,7 @@ function TIC()
 			
 			if w==1 then cls(2) else cls(0) end
   	drawgrid()
+   if key(49) then drawmap() end
 			print(tostring(cx)..', '..tostring(cy), 10, 10, 11)
  end
  
