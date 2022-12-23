@@ -10,6 +10,7 @@ mapH=100
 -- start in the middle
 cx=mapW//2
 cy=mapH//2
+cd=0 --look left
 
 function BOOT()
   for y=1,mapH do
@@ -51,9 +52,7 @@ function tile(x, y, h, c)
   if h==0 then 
     c=5+c
   end
-  if player then
-    c=2
-  end
+  --if player then c=2 end
   tree=c==7
   if tree then c=5 end
   tri(
@@ -68,6 +67,19 @@ function tile(x, y, h, c)
     xo+hs, yo,
     c
   )
+  if player then
+    if cd==0 then
+      spr(1,xo-8,yo-16,14,1)
+      spr(2,xo,yo-16,14,1)
+      spr(17,xo-8,yo-8,14,1)
+      spr(18,xo,yo-8,14,1)
+    else
+      spr(2,xo-8,yo-16,14,1,1)
+      spr(1,xo,yo-16,14,1,1)
+      spr(18,xo-8,yo-8,14,1,1)
+      spr(17,xo,yo-8,14,1,1)
+    end
+  end
   if yo~=yb then
 	  tri(
 	    xo-hs,yo,
@@ -147,10 +159,22 @@ function TIC()
  if t%10==0 then
    ox=cx
    oy=cy
-  	if btn(0) or key(23) then oy=oy+1 end
-	  if btn(1) or key(19) then oy=oy-1 end
-	  if btn(2) or key(01) then ox=ox-1 end
-	  if btn(3) or key(04) then ox=ox+1 end
+  	if btn(0) or key(23) then 
+     oy=oy+1
+     cd=0
+   end
+	  if btn(1) or key(19) then
+			  oy=oy-1
+					cd=1 
+			end
+	  if btn(2) or key(01) then 
+			  ox=ox-1 
+					cd=0
+			end
+	  if btn(3) or key(04) then
+			  ox=ox+1
+					cd=1
+			end
 			dh = math.abs(maph[cy][cx]-maph[oy][ox])
 			if (mapc[oy][ox] ~= 7) and 
 			   (dh <= 1) then
