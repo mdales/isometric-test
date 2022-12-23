@@ -2,12 +2,12 @@ t=0
 W=240
 H=136
 
-
 mapc={}
 maph={}
 mapW=100
 mapH=100
 
+-- start in the middle
 cx=mapW//2
 cy=mapH//2
 
@@ -173,12 +173,24 @@ function TIC()
 			  cx=mapW//2
 					cy=mapH//2
 			end
-			if cx<5 then cx=5 end
-			if cy<5 then cy=5 end
-			if cx>95 then cx=95 end
-			if cy>95 then cy=95 end
+			if cx<6 then
+			  cx=6
+					w=1
+			end
+			if cy<6 then
+			  cy=6
+			  w=1
+			end
+			if cx>95 then
+			  cx=95
+					w=1
+		 end
+			if cy>95 then
+			  cy=95
+					w=1
+			end
 			
-			if w==1 then cls(2) else cls(0) end
+			if w==1 then cls(8) else cls(0) end
   	drawgrid()
    if key(49) then drawmap() end
 			print(tostring(cx)..', '..tostring(cy), 10, 10, 11)
