@@ -124,10 +124,10 @@ function TIC()
  if t%10==0 then
    ox=cx
    oy=cy
-  	if btn(0) then oy=oy+1 end
-	  if btn(1) then oy=oy-1 end
-	  if btn(2) then ox=ox-1 end
-	  if btn(3) then ox=ox+1 end
+  	if btn(0) or key(23) then oy=oy+1 end
+	  if btn(1) or key(19) then oy=oy-1 end
+	  if btn(2) or key(01) then ox=ox-1 end
+	  if btn(3) or key(04) then ox=ox+1 end
 			dh = math.abs(maph[cy][cx]-maph[oy][ox])
 			if (mapc[oy][ox] ~= 7) and 
 			   (dh <= 1) then
