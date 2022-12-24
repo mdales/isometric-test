@@ -13,9 +13,9 @@ mapH=100
 -- start in the middle
 cx=mapW//2
 cy=mapH//2
-cd=0 --look left
+cd=0 --north,east,south,west
 
-function worldgen() 
+function worldgen()
   for y=1,mapH do
     c={}
     h={}
@@ -46,8 +46,14 @@ end
 
 function BOOT()
   seed = pmem(0)
+  cx=pmem(1)
+  cy=pmem(2)
+  cd=pmem(3)
   if seed==0 then
     seed = tstamp()
+    cx=mapW//2
+    cy=mapH//2
+    cd=0
     pmem(0, seed)
   end
   math.randomseed(seed)
@@ -62,7 +68,7 @@ function tile(x, y, h, c)
   xo=(W/2)+(x*hs)-(y*hs)
   yb=H-(10+(x*vs)+(y*vs))
   yo=yb-(h*ds)
-  if h==0 then 
+  if h==0 then
     c=5+c
   end
   --if player then c=2 end
@@ -73,7 +79,7 @@ function tile(x, y, h, c)
     xo-hs, yo,
     xo+hs, yo,
     c
-  ) 
+  )
   tri(
     xo, yo-vs,
     xo-hs, yo,
@@ -81,7 +87,7 @@ function tile(x, y, h, c)
     c
   )
   if player then
-    if cd==0 then
+    if cd==0 or cd==3 then
       spr(1,xo-8,yo-16,14,1)
       spr(2,xo,yo-16,14,1)
       spr(17,xo-8,yo-8,14,1)
@@ -159,7 +165,7 @@ function drawgrid()
   for y=cy+5,cy-5,-1 do
     c=mapc[y]
     h=maph[y]
-    if c then 
+    if c then
       for x=cx+5,cx-5,-1 do
         tile(x-cx+5,y-cy+5,h[x],c[x])
       end
@@ -172,24 +178,24 @@ function TIC()
  if t%10==0 then
    ox=cx
    oy=cy
-  	if btn(0) or key(23) then 
+  	if btn(0) or key(23) then
      oy=oy+1
      cd=0
    end
 	  if btn(1) or key(19) then
 			  oy=oy-1
-					cd=1 
+					cd=2
 			end
-	  if btn(2) or key(01) then 
-			  ox=ox-1 
-					cd=0
+	  if btn(2) or key(01) then
+			  ox=ox-1
+					cd=3
 			end
 	  if btn(3) or key(04) then
 			  ox=ox+1
 					cd=1
 			end
 			dh = math.abs(maph[cy][cx]-maph[oy][ox])
-			if (mapc[oy][ox] ~= 7) and 
+			if (mapc[oy][ox] ~= 7) and
 			   (dh <= 1) then
 						cx=ox
 						cy=oy
@@ -200,15 +206,11 @@ function TIC()
 			if key(5) then
 			  h=maph[cy][cx]
 					if h > 0 then h=h-1 end
-					maph[cy][cx]=h 
+					maph[cy][cx]=h
 			end
 			if key(17) then
 			  h=maph[cy][cx]
-					maph[cy][cx]=h+1 
-			end
-			if key(18) then
-			  cx=mapW//2
-					cy=mapH//2
+					maph[cy][cx]=h+1
 			end
 			if cx<6 then
 			  cx=6
@@ -226,16 +228,19 @@ function TIC()
 			  cy=95
 					w=1
 			end
-			
+
 		 cc=0
-			if w==1 then cc=8 end 
-			cls(cc) 
+			if w==1 then cc=8 end
+			cls(cc)
 			poke(0x3FF8*2,cc,4)
   	drawgrid()
    if key(49) then drawmap() end
 			print(tostring(cx)..', '..tostring(cy), 10, 10, 11)
+   pmem(1, cx)
+   pmem(2, cy)
+   pmem(3, cd)
  end
- 
+
  t=t+1
 end
 
