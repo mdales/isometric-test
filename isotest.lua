@@ -226,7 +226,10 @@ function TIC()
 					w=1
 			end
 			
-			if w==1 then cls(8) else cls(0) end
+		 cc=0
+			if w==1 then cc=8 end 
+			cls(cc) 
+			poke(0x3FF8*2,cc,4)
   	drawgrid()
    if key(49) then drawmap() end
 			print(tostring(cx)..', '..tostring(cy), 10, 10, 11)
