@@ -1,3 +1,4 @@
+-- input: gamepad or keyboard
 -- saveid: isotest
 
 t=0
