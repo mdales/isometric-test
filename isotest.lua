@@ -1,3 +1,5 @@
+-- saveid: isotest
+
 t=0
 W=240
 H=136
@@ -12,7 +14,7 @@ cx=mapW//2
 cy=mapH//2
 cd=0 --look left
 
-function BOOT()
+function worldgen() 
   for y=1,mapH do
     c={}
     h={}
@@ -39,6 +41,16 @@ function BOOT()
     mapc[y]=c
     maph[y]=h
   end
+end
+
+function BOOT()
+  seed = pmem(0)
+  if seed==0 then
+    seed = tstamp()
+    pmem(0, seed)
+  end
+  math.randomseed(seed)
+  worldgen()
 end
 
 function tile(x, y, h, c)
