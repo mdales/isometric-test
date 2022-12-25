@@ -7,8 +7,8 @@ H=136
 
 mapc={}
 maph={}
-mapW=100
-mapH=100
+mapW=16*8
+mapH=16*6
 
 -- start in the middle
 cx=mapW//2
@@ -220,12 +220,12 @@ function TIC()
 			  cy=6
 			  w=1
 			end
-			if cx>95 then
-			  cx=95
+			if cx>mapW-6 then
+			  cx=mapW-6
 					w=1
 		 end
-			if cy>95 then
-			  cy=95
+			if cy>mapH-6 then
+			  cy=mapH-6
 					w=1
 			end
 
