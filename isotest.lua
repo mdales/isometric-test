@@ -6,22 +6,20 @@ W=240
 H=136
 
 mapc={}
-maph={}
 mapW=16*8
-mapH=16*6
+mapH=16*8
 
 -- start in the middle
 cx=mapW//2
 cy=mapH//2
-cd=0 --north,east,south,west
+cd=0 --n,e,s,w
 
 function worldgen()
   for y=1,mapH do
-    c={}
-    h={}
+    r={}
     for x=1,mapW do
-      c[x]=(math.random()*2) + 5
-      h[x]=math.abs(
+      c=(math.random()*2) + 5
+      h=math.abs(
         (
           math.cos(
             (x+y/2)/(math.pi/1)
@@ -33,14 +31,14 @@ function worldgen()
         )
         //1
       )
-      if h[x] > 0 then
+      if h > 0 then
 		      if math.random() < 0.1 then
-		        c[x]=7
+		        c=7
 		      end
 		    end
+						r[x]={colour=c,height=h}
     end
-    mapc[y]=c
-    maph[y]=h
+    mapc[y]=r
   end
 end
 
@@ -60,7 +58,9 @@ function BOOT()
   worldgen()
 end
 
-function tile(x, y, h, c)
+function tile(x, y, cell)
+  c=cell.colour
+  h=cell.height
   player=x==5 and y==5
   hs=10
   vs=5
@@ -147,10 +147,10 @@ function drawmap()
   rectb(mx-mapW//2, my-mapH//2, mapW+2, mapH+2, 12)
   for y=1,mapH do
     row=mapc[y]
-    rowh=maph[y]
     for x=1,mapW do
-      c=row[x]
-      if rowh[x] < 1 then c=5+c end
+      c=row[x].colour
+      h=row[x].height
+      if h < 1 then c=5+c end
       if x==cx and y==cy then c=2 end
       pix(
         x+(W-mapW)//2,
@@ -163,11 +163,10 @@ end
 
 function drawgrid()
   for y=cy+5,cy-5,-1 do
-    c=mapc[y]
-    h=maph[y]
-    if c then
+    r=mapc[y]
+    if r then
       for x=cx+5,cx-5,-1 do
-        tile(x-cx+5,y-cy+5,h[x],c[x])
+        tile(x-cx+5,y-cy+5,r[x])
       end
     end
   end
@@ -194,23 +193,23 @@ function TIC()
 			  ox=ox+1
 					cd=1
 			end
-			dh = math.abs(maph[cy][cx]-maph[oy][ox])
-			if (mapc[oy][ox] ~= 7) and
+			dh = math.abs(mapc[cy][cx].height-mapc[oy][ox].height)
+			if (mapc[oy][ox].colour ~= 7) and
 			   (dh <= 1) then
-						cx=ox
-						cy=oy
-						w=0
+			  cx=ox
+					cy=oy
+					w=0
 			else
 			  w=1
 			end
 			if key(5) then
-			  h=maph[cy][cx]
+			  h=mapc[cy][cx].height
 					if h > 0 then h=h-1 end
-					maph[cy][cx]=h
+					mapc[cy][cx].height=h
 			end
 			if key(17) then
-			  h=maph[cy][cx]
-					maph[cy][cx]=h+1
+			  h=mapc[cy][cx].height
+					mapc[cy][cx].height=h+1
 			end
 			if cx<6 then
 			  cx=6
