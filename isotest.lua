@@ -194,6 +194,21 @@ function drawgrid()
   end
 end
 
+function gettarget()
+  tx=cx
+  ty=cy
+  if cd==0 then
+    ty=ty+1
+  elseif cd==1 then
+    tx=tx+1
+  elseif cd==2 then
+    ty=ty-1
+  elseif cd==3 then
+    tx=tx-1
+  end
+  return {tx,ty}
+end
+
 function TIC()
  if t%10==0 then
    ox=cx
@@ -216,7 +231,7 @@ function TIC()
 			end
 			cc=getcell(cx,cy)
 			oc=getcell(ox,oy)
-			dh = math.abs(cc.height-oc.height)
+			dh=math.abs(cc.height-oc.height)
 			if (oc.colour~=7) and (dh<=1) then
 			  cx=ox
 					cy=oy
@@ -229,13 +244,17 @@ function TIC()
 					cy=50
 			end
 			if key(5) then
-			  h=mapc[cy][cx].height
+			  local t=gettarget()
+					cell=getcell(t[1],t[2])
+			  h=cell.height
 					if h > 0 then h=h-1 end
-					mapc[cy][cx].height=h
+					cell.height=h
 			end
 			if key(17) then
-			  h=mapc[cy][cx].height
-					mapc[cy][cx].height=h+1
+			  local t=gettarget()
+					cell=getcell(t[1],t[2])
+			  h=cell.height
+					cell.height=h+1
 			end
 			
 		 cc=0
