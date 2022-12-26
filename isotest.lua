@@ -5,6 +5,8 @@ t=0
 W=240
 H=136
 
+chunks={}
+
 mapc={}
 mapW=16*8
 mapH=16*8
@@ -14,32 +16,38 @@ cx=mapW//2
 cy=mapH//2
 cd=0 --n,e,s,w
 
-function worldgen()
-  for y=1,mapH do
+function worldgen(chunk)
+  xc=((chunk>>16)-0x7fff)*16
+  yc=((chunk&0xFFFF)-0x7fff)*16
+  m={}
+  for y=0,15 do
     r={}
-    for x=1,mapW do
-      c=(math.random()*2) + 5
+    for x=0,15 do
+      ix=xc+x
+      iy=yc+y
+      c=(math.random()*2)+5
       h=math.abs(
         (
           math.cos(
-            (x+y/2)/(math.pi/1)
+            (ix+iy/2)/(math.pi/1)
           )*2
           +
           math.sin(
-            (x/3+y/3)/(math.pi/2)
+            (ix/3+iy/3)/(math.pi/2)
           )*2
         )
         //1
       )
-      if h > 0 then
-		      if math.random() < 0.1 then
+      if h>0 then
+		      if math.random()<0.1 then
 		        c=7
 		      end
 		    end
 						r[x]={colour=c,height=h}
     end
-    mapc[y]=r
+    m[y]=r
   end
+  return m
 end
 
 function BOOT()
@@ -55,7 +63,7 @@ function BOOT()
     pmem(0, seed)
   end
   math.randomseed(seed)
-  worldgen()
+  --worldgen()
 end
 
 function tile(x, y, cell)
@@ -144,30 +152,45 @@ end
 function drawmap()
   mx=W//2
   my=H//2
+  rect(mx-mapW//2, my-mapH//2, mapW+2, mapH+2, 0)
   rectb(mx-mapW//2, my-mapH//2, mapW+2, mapH+2, 12)
-  for y=1,mapH do
-    row=mapc[y]
-    for x=1,mapW do
-      c=row[x].colour
-      h=row[x].height
-      if h < 1 then c=5+c end
-      if x==cx and y==cy then c=2 end
-      pix(
-        x+(W-mapW)//2,
-        (mapH+(H-mapH)//2)-(y-1),
-        c
-      )
+  for c,m in pairs(chunks) do
+    xc=((c>>16)-0x7FFF)*16
+    yc=((c&0xFFFF)-0x7FFF)*16
+    for y=0,15 do
+      r=m[y]
+      for x=0,15 do
+        ax=xc+x
+        ay=yc+y
+        col=r[x].colour
+        h=r[x].height
+        if h<1 then col=5+col end
+        if ax==cx and ay==cy then col=2 end
+        pix(
+          ax+(W-mapW)//2,
+          (mapH+(H-mapH)//2)-(ay-1),
+          col
+        )
+      end
     end
   end
 end
 
+function getcell(x,y)
+  chunk=(((x//16)+0x7fff)<<16)+((y//16)+0x7fff)
+  mapc=chunks[chunk]
+  if mapc == nil then
+    mapc=worldgen(chunk)
+    chunks[chunk]=mapc
+  end
+  return mapc[y%16][x%16]
+end
+
 function drawgrid()
   for y=cy+5,cy-5,-1 do
-    r=mapc[y]
-    if r then
-      for x=cx+5,cx-5,-1 do
-        tile(x-cx+5,y-cy+5,r[x])
-      end
+    for x=cx+5,cx-5,-1 do
+      c=getcell(x,y)
+      tile(x-cx+5,y-cy+5,c)
     end
   end
 end
@@ -193,9 +216,10 @@ function TIC()
 			  ox=ox+1
 					cd=1
 			end
-			dh = math.abs(mapc[cy][cx].height-mapc[oy][ox].height)
-			if (mapc[oy][ox].colour ~= 7) and
-			   (dh <= 1) then
+			cc=getcell(cx,cy)
+			oc=getcell(ox,oy)
+			dh = math.abs(cc.height-oc.height)
+			if (oc.colour~=7) and (dh<=1) then
 			  cx=ox
 					cy=oy
 					w=0
