@@ -235,23 +235,7 @@ function TIC()
 			  h=mapc[cy][cx].height
 					mapc[cy][cx].height=h+1
 			end
-			if cx<6 then
-			  cx=6
-					w=1
-			end
-			if cy<6 then
-			  cy=6
-			  w=1
-			end
-			if cx>mapW-6 then
-			  cx=mapW-6
-					w=1
-		 end
-			if cy>mapH-6 then
-			  cy=mapH-6
-					w=1
-			end
-
+			
 		 cc=0
 			if w==1 then cc=8 end
 			cls(cc)
