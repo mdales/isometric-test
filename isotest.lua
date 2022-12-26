@@ -53,14 +53,14 @@ function worldgen(chunk)
 end
 
 function BOOT()
-  seed = pmem(0)
-  cx=pmem(1)
-  cy=pmem(2)
+  seed=pmem(0)
+  cx=pmem(1)-0x7FFF
+  cy=pmem(2)-0x7FFF
   cd=pmem(3)
   if seed==0 then
     seed=tstamp()
-    cx=mapW//2
-    cy=mapH//2
+    cx=(mapW//2)+0x7FFF
+    cy=(mapH//2)+0x7FFF
     cd=0
     pmem(0, seed)
   end
@@ -79,7 +79,6 @@ function tile(x, y, cell)
   if h==0 then
     c=5+c
   end
-  --if player then c=2 end
   tree=c==7
   if tree then c=5 end
   tri(
@@ -196,7 +195,6 @@ function drawgrid()
 end
 
 function TIC()
-
  if t%10==0 then
    ox=cx
    oy=cy
@@ -226,6 +224,10 @@ function TIC()
 			else
 			  w=1
 			end
+			if key(15) then
+			  cx=50
+					cy=50
+			end
 			if key(5) then
 			  h=mapc[cy][cx].height
 					if h > 0 then h=h-1 end
@@ -243,8 +245,8 @@ function TIC()
   	drawgrid()
    if key(49) then drawmap() end
 			print(tostring(cx)..', '..tostring(cy), 10, 10, 11)
-   pmem(1, cx)
-   pmem(2, cy)
+   pmem(1, cx+0x7FFF)
+   pmem(2, cy+0x7FFF)
    pmem(3, cd)
  end
 
