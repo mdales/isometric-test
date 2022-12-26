@@ -19,6 +19,8 @@ cd=0 --n,e,s,w
 function worldgen(chunk)
   xc=((chunk>>16)-0x7fff)*16
   yc=((chunk&0xFFFF)-0x7fff)*16
+  seed=pmem(0)
+  math.randomseed(seed+xc*yc)
   m={}
   for y=0,15 do
     r={}
@@ -56,14 +58,12 @@ function BOOT()
   cy=pmem(2)
   cd=pmem(3)
   if seed==0 then
-    seed = tstamp()
+    seed=tstamp()
     cx=mapW//2
     cy=mapH//2
     cd=0
     pmem(0, seed)
   end
-  math.randomseed(seed)
-  --worldgen()
 end
 
 function tile(x, y, cell)
