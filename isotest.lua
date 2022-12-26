@@ -194,6 +194,25 @@ function drawgrid()
   end
 end
 
+function drawcompass(x,y)
+  --north
+  tri(x+10,y+10,x+20,y+15,x+20,y+13,3)
+  tri(x+10,y+10,x+20,y+15,x+18,y+15,3)
+  print('N',x+4,y+4,13)
+  --east
+  tri(x+30,y+10,x+20,y+15,x+20,y+13,14)
+  tri(x+30,y+10,x+20,y+15,x+22,y+15,14)
+  print('E',x+31,y+4,14)
+  --south
+  tri(x+30,y+20,x+20,y+15,x+22,y+15,14)
+  tri(x+30,y+20,x+20,y+15,x+20,y+17,14)
+  print('S',x+31,y+21,14)
+  --west
+  tri(x+10,y+20,x+20,y+15,x+20,y+17,14)
+  tri(x+10,y+20,x+20,y+15,x+18,y+15,14)
+  print('W',x+4,y+21,14)
+end
+
 function gettarget()
   tx=cx
   ty=cy
@@ -257,13 +276,17 @@ function TIC()
 					cell.height=h+1
 			end
 			
+			-- render
 		 cc=0
 			if w==1 then cc=8 end
 			cls(cc)
 			poke(0x3FF8*2,cc,4)
   	drawgrid()
+   drawcompass(195,5)
    if key(49) then drawmap() end
 			print(tostring(cx)..', '..tostring(cy), 10, 10, 11)
+   
+   -- save
    pmem(1, cx+0x7FFF)
    pmem(2, cy+0x7FFF)
    pmem(3, cd)
@@ -271,7 +294,6 @@ function TIC()
 
  t=t+1
 end
-
 -- <TILES>
 -- 001:eccccccccc888888caaaaaaaca888888cacccccccacc0ccccacc0ccccacc0ccc
 -- 002:ccccceee8888cceeaaaa0cee888a0ceeccca0ccc0cca0c0c0cca0c0c0cca0c0c
