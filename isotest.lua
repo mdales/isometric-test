@@ -6,6 +6,7 @@ W=240
 H=136
 
 chunks={}
+entities={}
 
 mapc={}
 mapW=16*8
@@ -15,6 +16,7 @@ mapH=16*8
 cx=mapW//2
 cy=mapH//2
 cd=0 --n,e,s,w
+vd=0 
 
 function worldgen(chunk)
   xc=((chunk>>16)-0x7fff)*16
@@ -64,6 +66,16 @@ function BOOT()
     cd=0
     pmem(0, seed)
   end
+  -- generate entities before seed
+  -- so they're not deterministic
+  math.randomseed(seed)
+  for i=1,10 do
+    entities[i]={
+      cx=(math.random()*mapW)//1,
+      cy=(math.random()*mapH)//1,
+      cd=(math.random()*4)//1
+    }
+  end
 end
 
 function tile(x, y, cell)
@@ -104,6 +116,24 @@ function tile(x, y, cell)
       spr(1,xo,yo-16,14,1,1)
       spr(18,xo-8,yo-8,14,1,1)
       spr(17,xo,yo-8,14,1,1)
+    end
+  end
+  for i=1,#entities do
+    e=entities[i]
+    if e.cx==cx+x-5 and e.cy==cy+y-5 then
+      if (t%100)==0 then m=2 else m=0 end
+      trace('drawing '..tostring(i))
+      if e.cd==0 or e.cd==3 then
+        spr(1+m,xo-8,yo-16,14,1)
+        spr(2+m,xo,yo-16,14,1)
+        spr(17+m,xo-8,yo-8,14,1)
+        spr(18+m,xo,yo-8,14,1)
+      else
+        spr(2+m,xo-8,yo-16,14,1,1)
+        spr(1+m,xo,yo-16,14,1,1)
+        spr(18+m,xo-8,yo-8,14,1,1)
+        spr(17+m,xo,yo-8,14,1,1)
+      end
     end
   end
   if yo~=yb then
@@ -196,21 +226,25 @@ end
 
 function drawcompass(x,y)
   --north
-  tri(x+10,y+10,x+20,y+15,x+20,y+13,3)
-  tri(x+10,y+10,x+20,y+15,x+18,y+15,3)
-  print('N',x+4,y+4,13)
+  if vd==0 then pc=3;tc=13 else pc=14;tc=14 end
+  tri(x+10,y+10,x+20,y+15,x+20,y+13,pc)
+  tri(x+10,y+10,x+20,y+15,x+18,y+15,pc)
+  print('N',x+4,y+4,tc)
   --east
-  tri(x+30,y+10,x+20,y+15,x+20,y+13,14)
-  tri(x+30,y+10,x+20,y+15,x+22,y+15,14)
-  print('E',x+31,y+4,14)
+  if vd==1 then pc=3;tc=13 else pc=14;tc=14 end
+  tri(x+30,y+10,x+20,y+15,x+20,y+13,pc)
+  tri(x+30,y+10,x+20,y+15,x+22,y+15,pc)
+  print('E',x+31,y+4,tc)
   --south
-  tri(x+30,y+20,x+20,y+15,x+22,y+15,14)
-  tri(x+30,y+20,x+20,y+15,x+20,y+17,14)
-  print('S',x+31,y+21,14)
+  if vd==2 then pc=3;tc=13 else pc=14;tc=14 end
+  tri(x+30,y+20,x+20,y+15,x+22,y+15,pc)
+  tri(x+30,y+20,x+20,y+15,x+20,y+17,pc)
+  print('S',x+31,y+21,tc)
   --west
-  tri(x+10,y+20,x+20,y+15,x+20,y+17,14)
-  tri(x+10,y+20,x+20,y+15,x+18,y+15,14)
-  print('W',x+4,y+21,14)
+  if vd==3 then pc=3;tc=13 else pc=14;tc=14 end
+  tri(x+10,y+20,x+20,y+15,x+20,y+17,pc)
+  tri(x+10,y+20,x+20,y+15,x+18,y+15,pc)
+  print('W',x+4,y+21,tc)
 end
 
 function gettarget()
@@ -251,7 +285,17 @@ function TIC()
 			cc=getcell(cx,cy)
 			oc=getcell(ox,oy)
 			dh=math.abs(cc.height-oc.height)
-			if (oc.colour~=7) and (dh<=1) then
+			ec=false
+			for i=1,#entities do
+			  e=entities[i]
+					if ox==e.cx and oy==e.cy then
+					  trace('bumped into '..tostring(i))
+							trace(tostring(e.cx)..","..tostring(e.cy))
+					  ec=true
+							break
+					end
+			end
+			if (oc.colour~=7) and (dh<=1) and ec==false then
 			  cx=ox
 					cy=oy
 					w=0
