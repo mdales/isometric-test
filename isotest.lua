@@ -122,7 +122,6 @@ function tile(x, y, cell)
     e=entities[i]
     if e.cx==cx+x-5 and e.cy==cy+y-5 then
       if (t%100)==0 then m=2 else m=0 end
-      trace('drawing '..tostring(i))
       if e.cd==0 or e.cd==3 then
         spr(1+m,xo-8,yo-16,14,1)
         spr(2+m,xo,yo-16,14,1)
@@ -262,6 +261,29 @@ function gettarget()
   return {tx,ty}
 end
 
+function canmove(ox,oy,dx,dy)
+  local o=getcell(ox,oy)
+  local d=getcell(dx,dy)
+  
+  -- step height check
+  dh=math.abs(o.height-d.height)
+  
+  -- entity bump check
+		ec=false
+		for i=1,#entities do
+		  e=entities[i]
+				if dx==e.cx and dy==e.cy then
+				  ec=true
+						break
+				end
+		end
+		
+		-- tree bump
+		tb=d.colour==7
+ 
+  return not ((dh > 1) or tb or ec)
+end
+
 function TIC()
  if t%10==0 then
    ox=cx
@@ -282,20 +304,7 @@ function TIC()
 			  ox=ox+1
 					cd=1
 			end
-			cc=getcell(cx,cy)
-			oc=getcell(ox,oy)
-			dh=math.abs(cc.height-oc.height)
-			ec=false
-			for i=1,#entities do
-			  e=entities[i]
-					if ox==e.cx and oy==e.cy then
-					  trace('bumped into '..tostring(i))
-							trace(tostring(e.cx)..","..tostring(e.cy))
-					  ec=true
-							break
-					end
-			end
-			if (oc.colour~=7) and (dh<=1) and ec==false then
+			if canmove(cx,cy,ox,oy) then
 			  cx=ox
 					cy=oy
 					w=0
