@@ -270,6 +270,7 @@ function canmove(ox,oy,dx,dy)
   
   -- entity bump check
 		ec=false
+		local i
 		for i=1,#entities do
 		  e=entities[i]
 				if dx==e.cx and dy==e.cy then
@@ -281,7 +282,7 @@ function canmove(ox,oy,dx,dy)
 		-- tree bump
 		tb=d.colour==7
  
-  return not ((dh > 1) or tb or ec)
+  return not ((dh>1) or tb or ec)
 end
 
 function TIC()
@@ -327,6 +328,31 @@ function TIC()
 					cell=getcell(t[1],t[2])
 			  h=cell.height
 					cell.height=h+1
+			end
+			
+			-- move entities
+			for i=1,#entities do
+			  if math.random()<0.1 then
+					  local e=entities[i]
+							tx=e.cx
+							ty=e.cy
+							td=(math.random()*4)//1
+							if td==0 then
+							  ty=ty+1
+							elseif td==1 then
+							  tx=tx+1
+							elseif td==2 then
+							  ty=ty-1
+							elseif td==3 then
+							  tx=tx-1
+							end
+							
+							if canmove(e.cx,e.cy,tx,ty) then
+							  e.cx=tx
+							  e.cy=ty
+									e.cd=td
+							end
+					end
 			end
 			
 			-- render
