@@ -229,22 +229,22 @@ end
 
 function drawcompass(x,y)
   --north
-  if vd==0 then pc=3;tc=13 else pc=14;tc=14 end
+  if cd==0 then pc=3;tc=13 else pc=14;tc=14 end
   tri(x+10,y+10,x+20,y+15,x+20,y+13,pc)
   tri(x+10,y+10,x+20,y+15,x+18,y+15,pc)
   print('N',x+4,y+4,tc)
   --east
-  if vd==1 then pc=3;tc=13 else pc=14;tc=14 end
+  if cd==1 then pc=3;tc=13 else pc=14;tc=14 end
   tri(x+30,y+10,x+20,y+15,x+20,y+13,pc)
   tri(x+30,y+10,x+20,y+15,x+22,y+15,pc)
   print('E',x+31,y+4,tc)
   --south
-  if vd==2 then pc=3;tc=13 else pc=14;tc=14 end
+  if cd==2 then pc=3;tc=13 else pc=14;tc=14 end
   tri(x+30,y+20,x+20,y+15,x+22,y+15,pc)
   tri(x+30,y+20,x+20,y+15,x+20,y+17,pc)
   print('S',x+31,y+21,tc)
   --west
-  if vd==3 then pc=3;tc=13 else pc=14;tc=14 end
+  if cd==3 then pc=3;tc=13 else pc=14;tc=14 end
   tri(x+10,y+20,x+20,y+15,x+20,y+17,pc)
   tri(x+10,y+20,x+20,y+15,x+18,y+15,pc)
   print('W',x+4,y+21,tc)
@@ -294,20 +294,32 @@ function TIC()
    ox=cx
    oy=cy
   	if btn(0) or key(23) then
-     oy=oy+1
-     cd=0
+     if cd==0 then 
+       oy=oy+1
+     else
+       cd=0
+     end
    end
 	  if btn(1) or key(19) then
-			  oy=oy-1
-					cd=2
+			  if cd==2 then
+  					oy=oy-1
+		   else
+  					cd=2
+     end
 			end
 	  if btn(2) or key(01) then
-			  ox=ox-1
-					cd=3
+			  if cd==3 then
+  					ox=ox-1
+		   else
+							cd=3
+					end
 			end
 	  if btn(3) or key(04) then
-			  ox=ox+1
-					cd=1
+			  if cd==1 then
+  					ox=ox+1
+		   else
+							cd=1
+					end
 			end
 			if canmove(cx,cy,ox,oy) then
 			  cx=ox
