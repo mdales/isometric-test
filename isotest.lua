@@ -271,6 +271,7 @@ function canmove(ox,oy,dx,dy)
 
   -- step height check
   dh=math.abs(o.height-d.height)
+  if dh>1 then return false end
 
   -- entity bump check
 		ec=false
@@ -278,15 +279,20 @@ function canmove(ox,oy,dx,dy)
 		for i=1,#entities do
 		  e=entities[i]
 				if dx==e.cx and dy==e.cy then
-				  ec=true
-						break
+				  return false
 				end
+		end
+		
+		-- player bump check (for entites)
+		if ((dx~=ox) or (dy~=oy)) and 
+		  ((dx==cx) and (dy==cy)) then
+				return false
 		end
 
 		-- tree bump
-		tb=d.colour==7
+		if d.colour==7 then return false end
 
-  return not ((dh>1) or tb or ec)
+  return true
 end
 
 function TIC()
