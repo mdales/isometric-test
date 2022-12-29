@@ -5,7 +5,6 @@ t=0
 W=240
 H=136
 
-
 chunks={}
 entities={}
 
@@ -182,7 +181,6 @@ function drawmap()
         col=r[x].colour
         h=r[x].height
         if h<1 then col=10+math.max(-2,h) end
-        if ax==cx and ay==cy then col=2 end
         pix(
           ax+(W-mapW)//2,
           (mapH+(H-mapH)//2)-(ay-1),
@@ -191,6 +189,23 @@ function drawmap()
       end
     end
   end
+  -- add entites
+  for i=1,#entities do
+    e=entities[i]
+    circ(
+      e.cx+(W-mapW)//2,
+      (mapH+(H-mapH)//2)-(e.cy-1),
+      2,
+      12
+    )
+  end
+  -- add players
+  circ(
+    cx+(W-mapW)//2,
+    (mapH+(H-mapH)//2)-(cy-1),
+    2,
+    2
+  )
 end
 
 function getcell(x,y)
