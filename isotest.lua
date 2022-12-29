@@ -140,6 +140,7 @@ function worldgen(chunk)
   xc=((chunk>>16)-0x7fff)
   yc=((chunk&0xFFFF)-0x7fff)
   seed=pmem(0)
+  math.randomseed(seed+xc*yc) -- for tree gen
   m={}
   for y=0,15 do
     r={}
