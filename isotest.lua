@@ -186,7 +186,7 @@ function tile(x, y, cell)
   c=cell.colour
   h=cell.height
   if h<=0 then
-    c=10+h
+    c=10+math.max(h,-2)
     h=0
   end
   player=x==5 and y==5
@@ -297,7 +297,7 @@ function drawmap()
         ay=yc+y
         col=r[x].colour
         h=r[x].height
-        if h<1 then col=10+h end
+        if h<1 then col=10+math.max(-2,h) end
         if ax==cx and ay==cy then col=2 end
         pix(
           ax+(W-mapW)//2,
