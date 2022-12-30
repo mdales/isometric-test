@@ -16,7 +16,7 @@ mapH=16*8
 cx=mapW//2
 cy=mapH//2
 cd=0 --n,e,s,w
-vd=0
+ci=nil --current interaction target
 
 function worldgen(chunk)
   xc=((chunk>>16)-0x7fff)
@@ -58,9 +58,11 @@ function BOOT()
   math.randomseed(seed)
   for i=1,10 do
     entities[i]={
+      name="npc "..tostring(i),
       cx=(math.random()*mapW)//1,
       cy=(math.random()*mapH)//1,
-      cd=(math.random()*4)//1
+      cd=(math.random()*4)//1,
+      busy=false
     }
   end
 end
@@ -191,13 +193,21 @@ function drawmap()
   end
   -- add entites
   for i=1,#entities do
-    e=entities[i]
-    circ(
+    local e=entities[i]
+    -- if the entity is not in a
+    -- loaded chunk, skip
+    local v=pix(
       e.cx+(W-mapW)//2,
-      (mapH+(H-mapH)//2)-(e.cy-1),
-      2,
-      12
+      (mapH+(H-mapH)//2)-(e.cy-1)
     )
+    if v~=0 then
+		    circ(
+		      e.cx+(W-mapW)//2,
+		      (mapH+(H-mapH)//2)-(e.cy-1),
+		      2,
+		      12
+		    )
+				end
   end
   -- add players
   circ(
@@ -295,6 +305,10 @@ function canmove(ox,oy,dx,dy)
   return true
 end
 
+function drawbusy()
+
+end
+
 function TIC()
  if t%10==0 then
    ox=cx
@@ -354,27 +368,32 @@ function TIC()
 
 			-- move entities
 			for i=1,#entities do
-			  if math.random()<0.1 then
-					  local e=entities[i]
-							tx=e.cx
-							ty=e.cy
-							td=(math.random()*4)//1
-							if td==0 then
-							  ty=ty+1
-							elseif td==1 then
-							  tx=tx+1
-							elseif td==2 then
-							  ty=ty-1
-							elseif td==3 then
-							  tx=tx-1
+					local e=entities[i]
+					-- if the chunk the entity is in
+					-- is not loaded, skip
+					local c=(((e.cx//16)+0x7fff)<<16)+((e.cy//16)+0x7fff)
+     if chunks[c]~=nil then
+					  if math.random()<0.1 then
+									tx=e.cx
+									ty=e.cy
+									td=(math.random()*4)//1
+									if td==0 then
+									  ty=ty+1
+									elseif td==1 then
+									  tx=tx+1
+									elseif td==2 then
+									  ty=ty-1
+									elseif td==3 then
+									  tx=tx-1
+									end
+		
+									if canmove(e.cx,e.cy,tx,ty) then
+									  e.cx=tx
+									  e.cy=ty
+											e.cd=td
+									end
 							end
-
-							if canmove(e.cx,e.cy,tx,ty) then
-							  e.cx=tx
-							  e.cy=ty
-									e.cd=td
-							end
-					end
+	    end
 			end
 
 			-- render
