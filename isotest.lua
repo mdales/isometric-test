@@ -306,6 +306,11 @@ function canmove(ox,oy,dx,dy)
 end
 
 function drawbusy()
+
+  cls(9)
+  local c=getcell(cx,cy)
+  rect(0,H//2,W,H//2,c.colour)
+  
   local m=0
   if (t%100)==0 then m=2 end
      
@@ -438,7 +443,7 @@ function TIC()
 			if w==1 then cc=8 end
 			cls(cc)
 			poke(0x3FF8*2,cc,4)
-			if ci==nil then
+			if ci==nil then 
     	drawgrid()
      drawcompass(195,5)
      if key(49) then drawmap() end
