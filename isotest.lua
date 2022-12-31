@@ -306,7 +306,26 @@ function canmove(ox,oy,dx,dy)
 end
 
 function drawbusy()
-
+  local m=0
+  if (t%100)==0 then m=2 end
+     
+  --player
+  xo=(W//2)-((8*4*2)+20)
+  yo=(H//2)-(8*4)
+  print("player",55,yo-12,12)
+  spr(2+m,xo,yo,14,4,1)
+  spr(1+m,xo+(8*4),yo,14,4,1)
+  spr(18+m,xo,yo+(8*4),14,4,1)
+  spr(17+m,xo+(8*4),yo+(8*4),14,4,1)
+  --entity
+  m=0
+  if (t%90)==0 then m=2 end
+  xo=(W//2)+20
+  print(ci.name,(W//2)+30,yo-12,12)
+  spr(1+m,xo,yo,14,4)
+  spr(2+m,xo+(8*4),yo,14,4)
+  spr(17+m,xo,yo+(8*4),14,4)
+  spr(18+m,xo+(8*4),yo+(8*4),14,4)
 end
 
 function TIC()
@@ -353,11 +372,27 @@ function TIC()
 					cy=50
 			end
 			if key(5) then
-			  local t=gettarget()
-					cell=getcell(t[1],t[2])
-			  h=cell.height
-					if h > 0 then h=h-1 end
-					cell.height=h
+			  if ci==nil then
+					  local t=gettarget()
+							for i=1,#entities do
+							  local e=entities[i]
+									if t[1]==e.cx and t[2]==e.cy then
+									  ci=e
+											break
+									end
+							end
+									
+							if ci==nil then 
+		  					local cell=getcell(t[1],t[2])
+				  	  local h=cell.height
+						  	if h > 0 then h=h-1 end
+							  cell.height=h
+							end
+					else
+					  -- we were in an interaction
+					  ci=nil
+					end
+					
 			end
 			if key(17) then
 			  local t=gettarget()
@@ -371,8 +406,10 @@ function TIC()
 					local e=entities[i]
 					-- if the chunk the entity is in
 					-- is not loaded, skip
+					-- if the entity is being interacted
+					-- with, skip
 					local c=(((e.cx//16)+0x7fff)<<16)+((e.cy//16)+0x7fff)
-     if chunks[c]~=nil then
+     if chunks[c]~=nil and ci~=e then
 					  if math.random()<0.1 then
 									tx=e.cx
 									ty=e.cy
@@ -401,10 +438,14 @@ function TIC()
 			if w==1 then cc=8 end
 			cls(cc)
 			poke(0x3FF8*2,cc,4)
-  	drawgrid()
-   drawcompass(195,5)
-   if key(49) then drawmap() end
-			print(tostring(cx)..', '..tostring(cy), 10, 10, 11)
+			if ci==nil then
+    	drawgrid()
+     drawcompass(195,5)
+     if key(49) then drawmap() end
+			  print(tostring(cx)..', '..tostring(cy), 10, 10, 11)
+   else
+     drawbusy()
+   end 
 
    -- save
    pmem(1, cx+0x7FFF)
