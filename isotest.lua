@@ -29,10 +29,11 @@ function worldgen(chunk)
     for x=0,15 do
       c=(math.random()*2)+5
       h=3+((perlin:noise(xc+(x/16),yc+(y/16),seed)*8)//1)
-      if h>0 then
-        if math.random()<0.1 then
+      local t=perlin:noise(xc+(x/16),yc+(y/16),seed+20)
+      if h>0 and t>0.3 then
           c=7
-        end
+      else
+        c=(6+t*2)//1
       end
       r[x]={colour=c,height=h}
     end
