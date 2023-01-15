@@ -2,7 +2,33 @@ require "perlin"
 
 terrain = {
     seed = 0.213,
-    chunks = {}
+    chunks = {},
+    blocks = {
+        grass = {
+            colour = function(h) return {0, (h / 11) + 0.5, 0} end,
+            tree = false,
+            passable = true,
+            height = function(h) return h end
+        },
+        water = {
+            colour = function(h) return {0, 0, 0.5 + 0.5 / (math.abs(h) + 1)} end,
+            tree=false,
+            passable=false,
+            height = function(h) return 0 end
+        },
+        forest = {
+            colour = function(h) return {0, (h / 11) + 0.5, 0} end,
+            tree=true,
+            passable=false,
+            height = function(h) return h end
+        },
+        rock = {
+            colour = function(h) return {(h / 22) + 0.5, (h / 22) + 0.3, (h / 22) + 0.1} end,
+            tree=false,
+            passable=true,
+            height = function(h) return h + 2 end
+        }
+    }
 }
 
 function terrain.chunkToCoords(chunk)
@@ -34,15 +60,19 @@ function terrain.worldgen(chunk)
     for y = 0,15 do
         local r = {}
         for x = 0,15 do
-            local c = (math.random() * 2) + 5
+            local block = terrain.blocks.grass
             local h = 3 + math.floor(perlin:noise(xc + (x / 16), yc + (y / 16), terrain.seed) * 8)
             local t = perlin:noise(xc + (x / 16), yc + (y / 16), terrain.seed + 20)
-            if h > 0 and t > 0.3 then
-                c = 7
+            if h > 0 then
+                if t > 0.3 then
+                    block = terrain.blocks.forest
+                elseif t < -0.5 then
+                    block = terrain.blocks.rock
+                end
             else
-                c = math.floor(6 + t * 2)
+                block = terrain.blocks.water
             end
-            r[x] = {colour=c, height=h}
+            r[x] = {height=h, block=block}
         end
         m[y] = r
     end

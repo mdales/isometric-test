@@ -54,7 +54,7 @@ function entities.generate(chunk)
 		local cx = math.floor(math.random() * 16) + (xc * 16)
 		local cy = math.floor(math.random() * 16) + (yc * 16)
 		local t = terrain.getcell(cx, cy)
-		if t.height > 0 and t.colour ~= 7 then
+		if t.block.passable then
 			table.insert(entities.npcs, {
 				name = "npc "..tostring(i+prevcount),
 				cx = cx,
@@ -115,15 +115,14 @@ function entities.canmove(ox, oy, dx, dy)
 
 	-- sometimes people spawn in illegal locations, so
 	-- force them to move if so
-	if o.height <= 0 then return true end
-	if o.colour == 7 then return true end
+	if not o.block.passable then return true end
 
 	-- step height check
-	local dh = math.abs(o.height - d.height)
+	local dh = math.abs(o.block.height(o.height) - d.block.height(d.height))
 	if dh > 1 then return false end
 
-	-- water check
-	if d.height <= 0 then return false end
+	-- can we enter block
+	if not d.block.passable then return false end
 
 	-- entity bump check
 	for i = 1, #entities.npcs do
@@ -137,9 +136,6 @@ function entities.canmove(ox, oy, dx, dy)
 	if ((dx ~= ox) or (dy ~= oy)) and ((dx == entities.player.cx) and (dy == entities.player.cy)) then
 		return false
 	end
-
-	-- tree bump
-	if d.colour == 7 then return false end
 
 	return true
 end

@@ -36,7 +36,7 @@ function items.generate(chunk)
 		local cx = math.floor(math.random() * 16) + (xc * 16)
 		local cy = math.floor(math.random() * 16) + (yc * 16)
 		local t = terrain.getcell(cx, cy)
-		if t.height > 0 and t.colour ~= 7 then
+		if t.block.passable then
 			table.insert(items.instances, {
 				t = items.types[math.floor(math.random() * #items.types) + 1],
 				cx = cx,
@@ -59,7 +59,6 @@ function items.init_item(imagename, frames_override)
 	if frames_override ~= nil then
 		frames = frames_override
 	end
-	print(imagename, frames_override, frames)
 	for i = 1, frames do
 		local frame = love.image.newImageData(h, h)
 		frame:paste(sprite_sheet, 0, 0, ((i-1) * h), 0, h, h)

@@ -89,16 +89,21 @@ function love.update(dt)
                 end
             end
 
-            if ci == nil then
-                local cell = terrain.getcell(t[1], t[2])
-                local h = cell.height
-                if h > 0 then h = h - 1 end
-                cell.height = h
+            if entities.player.target == nil then
+                if ci == nil then
+                    local cell = terrain.getcell(t[1], t[2])
+                    local h = cell.height
+                    if h > 0 then h = h - 1 end
+                    cell.height = h
+                end
             end
         else
             -- we were in an interaction
             entities.player.target = nil
         end
+    end
+    if love.keyboard.isDown("escape") then
+        entities.player.target = nil
     end
     if love.keyboard.isDown("q") then
         local t = entities.gettarget(entities.player)

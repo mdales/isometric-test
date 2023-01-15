@@ -40,21 +40,16 @@ end
 function drawtile(x, y, cell, tick)
 	local W, H = love.graphics.getDimensions()
 
-	local c=cell.colour
-	local h=cell.height
-	local tree = c == 7
+	local block = cell.block
+	local h = block.height(cell.height)
+	local tree = block.tree
 
-	c = {0, h/11 + 0.5, 0}
-
-	if h <= 0 then
-		c = {0, 0, 0.5 + 0.5/(math.abs(h)+1)}
-		h = 0
-	end
 	local player = x==6 and y==6
 	local xo = (W / 2) + (x * hs) - (y * hs)
 	local yb = (H / 2) - ((x * vs) + (y * vs)) + (13*vs)
 	local yo = yb - (h * ds)
 
+	local c = block.colour(cell.height)
 	love.graphics.setColor(c)
 	love.graphics.polygon(
 		"fill",
@@ -68,6 +63,7 @@ function drawtile(x, y, cell, tick)
 		love.graphics.setColor(entities.player.hue)
 		love.graphics.draw(draw.frames[entities.player.mode+1][(((entities.player.cd - 1) * 2) + 1) % 8], xo - 16, yo-32, 0, 2)
 	end
+
 
 	for i=1,#entities.npcs do
 	  local e=entities.npcs[i]
@@ -257,18 +253,11 @@ function draw:map()
 			for x = 0, 15 do
 				local ax = mx + ((xc + x) - cx)
 				local ay = my - ((yc + y) - cy)
-				local c = r[x].colour
+				local b = r[x].block
 				local h = r[x].height
 
-				local tree = c == 7
-
-				c = {0, h/11 + 0.5, 0}
-				if tree then c = {0, 0.4, 0} end
-
-				if h <= 0 then
-					c = {0, 0, 0.5 + 0.5/(math.abs(h)+1)}
-					h = 0
-				end
+				local c = b.colour(h)
+				if b.tree then c = {0, 0.4, 0} end
 
 				love.graphics.setColor(c)
 				love.graphics.points(ax, ay)
