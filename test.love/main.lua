@@ -92,8 +92,13 @@ function love.update(dt)
             end
 
             if entities.player.target == nil then
-                if ci == nil then
-                    local cell = terrain.getcell(t[1], t[2])
+                local cell = terrain.getcell(t[1], t[2])
+                if cell.block.tree then
+                    -- this is hokey - we should just be able
+                    -- to modify the tree state, but given how terrain is
+                    -- loaded that'd be lost on quit, so this is a bodge
+                    cell.block = terrain.blocks.grass
+                else
                     local h = cell.height
                     if h > 0 then h = h - 1 end
                     cell.height = h
