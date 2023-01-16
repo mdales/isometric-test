@@ -3,7 +3,8 @@ require "perlin"
 terrain = {
     generated = {
         seed = 0.213,
-        chunks = {}
+        chunks = {},
+        modified = {}
     },
     blocks = {
         grass = {
@@ -33,6 +34,13 @@ terrain = {
             tree=false,
             passable=true,
             height = function(h) return h + 2 end
+        },
+        mud = {
+            id = 4,
+            colour = function(h) return {(h / 22) + 0.5, (h / 22) + 0.4, (h / 22) + 0.1} end,
+            tree = false,
+            passable = true,
+            height = function(h) return h end
         }
     }
 }
@@ -57,11 +65,15 @@ function terrain.load()
                 end
             end
         end
+        for k, v in pairs(terrain.generated.modified) do
+            terrain.generated.chunks[k] = v
+        end
     end
 end
 
 function terrain.save()
-    love.filesystem.write(terrain_save_name, TSerial.pack(terrain.generated, true, true))
+    terrain.generated.chunks = {}
+    love.filesystem.write(terrain_save_name, TSerial.pack(terrain.generated, true, false))
 end
 
 function terrain.chunkToCoords(chunk)
@@ -84,6 +96,11 @@ function terrain.getcell(x, y)
         items.generate(chunk)
     end
     return mapc[y % 16][x % 16]
+end
+
+function terrain.markCellModified(x, y)
+    local chunk = terrain.coordsToChunk(x, y)
+    terrain.generated.modified[chunk] = terrain.generated.chunks[chunk]
 end
 
 function terrain.worldgen(chunk)

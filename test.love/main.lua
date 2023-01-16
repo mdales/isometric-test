@@ -97,12 +97,16 @@ function love.update(dt)
                     -- this is hokey - we should just be able
                     -- to modify the tree state, but given how terrain is
                     -- loaded that'd be lost on quit, so this is a bodge
-                    cell.block = terrain.blocks.grass
+                    cell.block = terrain.blocks.mud
                 else
                     local h = cell.height
                     if h > 0 then h = h - 1 end
                     cell.height = h
+                    if cell.block.id == terrain.blocks.grass.id then
+                        cell.block = terrain.blocks.mud
+                    end
                 end
+                terrain.markCellModified(t[1], t[2])
             end
         else
             -- we were in an interaction
@@ -117,6 +121,10 @@ function love.update(dt)
         local cell = terrain.getcell(t[1], t[2])
         local h = cell.height
         cell.height = h + 1
+        if cell.block.id == terrain.blocks.grass.id then
+            cell.block = terrain.blocks.mud
+        end
+        terrain.markCellModified(t[1], t[2])
     end
 
     entities.update()
