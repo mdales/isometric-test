@@ -25,9 +25,9 @@ function entities.load()
 	-- after we load the npcs, simulate them briefly so they're not just
 	-- where we left them last time. we need to force the chunks near the player
 	-- in for this to work
-	for y = -1,1 do
-		for x = -1,1 do
-			_ = terrain.getcell(entities.player.cx + (x*6), entities.player.cy+(y*6))
+	for y = -1, 1 do
+		for x = -1, 1 do
+			_ = terrain.getcell(entities.player.cx + (x * 6), entities.player.cy + (y * 6))
 		end
 	end
 	for i=1,100 do
@@ -76,7 +76,7 @@ function entities.update()
 		-- if the entity is being interacted
 		-- with, skip
 		local c = ((math.floor(e.cx / 16) + 0x7fff) * 2^16) + (math.floor(e.cy / 16) + 0x7fff)
-		if terrain.chunks[c] ~= nil and entities.player.target ~= e then
+		if terrain.generated.chunks[c] ~= nil and entities.player.target ~= e then
 			if math.random() < 0.1 then
 				local tx = e.cx
 				local ty = e.cy

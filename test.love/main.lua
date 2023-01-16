@@ -10,6 +10,7 @@ alert = false
 show_map = false
 
 function love.load()
+    terrain.load()
     items.load()
     entities.load()
     draw.load()
@@ -17,6 +18,7 @@ end
 
 function love.quit()
     entities.save()
+    terrain.save()
 end
 
 function love.update(dt)

@@ -35,6 +35,14 @@ function draw.load()
 	draw.frames={
 		standing, stepleft, standing, stepright
 	}
+
+	occludes_shader = love.graphics.newShader [[
+		extern number time;
+		vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
+		{
+			return vec4(color[0], color[1], color[2], 0.5);
+		}
+	]]
 end
 
 function drawtile(x, y, cell, tick)
@@ -49,6 +57,46 @@ function drawtile(x, y, cell, tick)
 	local yb = (H / 2) - ((x * vs) + (y * vs)) + (13*vs)
 	local yo = yb - (h * ds)
 
+	local occludes = false
+	if math.abs(x-y)<2 and ((x < 6) or (y < 6)) then
+		local c = terrain.getcell(entities.player.cx, entities.player.cy)
+		local ch = c.block.height(c.height)
+		local cyb = (H / 2) - ((6 * vs) + (6 * vs)) + (13 * vs)
+		local cyo = cyb - (ch * ds)
+
+		local xd = math.abs(5-x) * ds
+		if yo < cyo - (ds + xd) then
+
+		-- if ch < h then
+			occludes = true
+		end
+	end
+
+	if occludes then
+		love.graphics.setShader(occludes_shader)
+	end
+
+	--sides
+	if yo~=yb then
+		love.graphics.setColor(0.6, 0.6, 0.5)
+		love.graphics.polygon(
+			"fill",
+			xo - hs, yo,
+			xo - hs, yb,
+			xo, yb + vs,
+			xo, yo + vs
+		)
+		love.graphics.setColor(0.4, 0.4, 0.4)
+		love.graphics.polygon(
+			"fill",
+			xo + hs, yo,
+			xo + hs, yb,
+			xo, yb + vs,
+			xo, yo + vs
+		)
+	end
+
+	-- top
 	local c = block.colour(cell.height)
 	love.graphics.setColor(c)
 	love.graphics.polygon(
@@ -58,6 +106,27 @@ function drawtile(x, y, cell, tick)
 		xo, yo - vs,
 		xo + hs, yo
 	)
+
+	if tree then
+		love.graphics.setColor(0, 0.5, 0)
+		love.graphics.polygon(
+			"fill",
+			xo, yo,
+			xo - 9, yo - 3,
+			xo, yo - 30
+		)
+		love.graphics.setColor(0, 0.3, 0)
+		love.graphics.polygon(
+			"fill",
+			xo, yo,
+			xo + 9, yo - 3,
+			xo, yo - 30
+		)
+	end
+
+	if occludes then
+		love.graphics.setShader()
+	end
 
 	if player then
 		love.graphics.setColor(entities.player.hue)
@@ -86,42 +155,6 @@ function drawtile(x, y, cell, tick)
 			)
 			love.graphics.setColor(1,1,1)
 			love.graphics.draw(item.t.frames[1+(tick % #item.t.frames)], xo - 16, yo - (36 + math.cos(tick/2)*4), 0, 2)
-		end
-	end
-
-	if yo~=yb then
-		love.graphics.setColor(0.6, 0.6, 0.5)
-		love.graphics.polygon(
-			"fill",
-			xo - hs, yo,
-			xo - hs, yb,
-			xo, yb + vs,
-			xo, yo + vs
-		)
-		love.graphics.setColor(0.4, 0.4, 0.4)
-		love.graphics.polygon(
-			"fill",
-			xo + hs, yo,
-			xo + hs, yb,
-			xo, yb + vs,
-			xo, yo + vs
-		)
-
-		if tree then
-			love.graphics.setColor(0, 0.5, 0)
-			love.graphics.polygon(
-				"fill",
-				xo, yo,
-				xo - 9, yo - 3,
-				xo, yo - 30
-			)
-			love.graphics.setColor(0, 0.3, 0)
-			love.graphics.polygon(
-				"fill",
-				xo, yo,
-				xo + 9, yo - 3,
-				xo, yo - 30
-			)
 		end
 	end
 end
@@ -243,7 +276,7 @@ function draw:map()
 	local cx = entities.player.cx
 	local cy = entities.player.cy
 
-	for chunk, m in pairs(terrain.chunks) do
+	for chunk, m in pairs(terrain.generated.chunks) do
 		local xc, yc = terrain.chunkToCoords(chunk)
 		yc = yc * 16
 		xc = xc * 16
@@ -271,7 +304,7 @@ function draw:map()
 
 		-- if the entity is not in a loaded chunk, skip
 		local c = ((math.floor(e.cx / 16) + 0x7fff) * 2^16) + (math.floor(e.cy / 16) + 0x7fff)
-		if terrain.chunks[c] ~= nil then
+		if terrain.generated.chunks[c] ~= nil then
 			local ax = mx + (e.cx - cx)
 			local ay = my - (e.cy - cy)
 			love.graphics.circle("fill", ax, ay, 9)
