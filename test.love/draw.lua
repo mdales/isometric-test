@@ -40,7 +40,7 @@ function draw.load()
 		extern number time;
 		vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 pixel_coords)
 		{
-			return vec4(color[0], color[1], color[2], 0.5);
+			return vec4(color[0], color[1], color[2], 0.25);
 		}
 	]]
 end
@@ -57,17 +57,19 @@ function drawtile(x, y, cell, tick)
 	local yb = (H / 2) - ((x * vs) + (y * vs)) + (13*vs)
 	local yo = yb - (h * ds)
 
+
 	local occludes = false
 	if math.abs(x-y)<2 and ((x < 6) or (y < 6)) then
+
 		local c = terrain.getcell(entities.player.cx, entities.player.cy)
 		local ch = c.block.height(c.height)
 		local cyb = (H / 2) - ((6 * vs) + (6 * vs)) + (13 * vs)
 		local cyo = cyb - (ch * ds)
 
-		local xd = math.abs(5-x) * ds
-		if yo < cyo - (ds + xd) then
+		local xd = ds
+		if x ~= y then xd = ds / 2 end
 
-		-- if ch < h then
+		if yo-xd < cyo then
 			occludes = true
 		end
 	end

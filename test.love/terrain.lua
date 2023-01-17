@@ -37,7 +37,7 @@ terrain = {
         },
         mud = {
             id = 4,
-            colour = function(h) return {(h / 22) + 0.5, (h / 22) + 0.4, (h / 22) + 0.1} end,
+            colour = function(h) return {(h / 44) + 0.4, (h / 44) + 0.25, (h / 44) + 0.1} end,
             tree = false,
             passable = true,
             height = function(h) return h end
@@ -55,7 +55,7 @@ function terrain.load()
         for _, block in pairs(terrain.blocks) do
             table_map[block.id] = block
         end
-        for k, chunk in pairs(terrain.generated.chunks) do
+        for k, chunk in pairs(terrain.generated.modified) do
             for i = 0, 15 do
                 local row = chunk[i]
                 for j = 0, 15 do
@@ -118,6 +118,7 @@ function terrain.worldgen(chunk)
                     block = terrain.blocks.forest
                 elseif t < -0.5 then
                     block = terrain.blocks.rock
+                    h = h + math.floor((math.abs(t) - 0.5) * 40)
                 end
             else
                 block = terrain.blocks.water
