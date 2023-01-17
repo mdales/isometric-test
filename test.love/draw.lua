@@ -278,21 +278,19 @@ function draw:map()
 	local cx = entities.player.cx
 	local cy = entities.player.cy
 
-	for chunk, m in pairs(terrain.generated.chunks) do
+	for chunk, _ in pairs(terrain.generated.chunks) do
 		local xc, yc = terrain.chunkToCoords(chunk)
 		yc = yc * 16
 		xc = xc * 16
 
 		for y = 0, 15 do
-			local r = m[y]
 			for x = 0, 15 do
 				local ax = mx + ((xc + x) - cx)
 				local ay = my - ((yc + y) - cy)
-				local b = r[x].block
-				local h = r[x].height
+				local cell = terrain.getcell(xc + x, yc + y)
 
-				local c = b.colour(h)
-				if b.tree then c = {0, 0.4, 0} end
+				local c = cell.block.colour(cell.height)
+				if cell.block.tree then c = {0, 0.4, 0} end
 
 				love.graphics.setColor(c)
 				love.graphics.points(ax, ay)

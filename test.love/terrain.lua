@@ -72,7 +72,9 @@ function terrain.load()
 end
 
 function terrain.save()
-    terrain.generated.chunks = {}
+    for k, _ in pairs(terrain.generated.chunks) do
+        terrain.generated.chunks[k] = {}
+    end
     love.filesystem.write(terrain_save_name, TSerial.pack(terrain.generated, true, false))
 end
 
@@ -89,11 +91,14 @@ end
 function terrain.getcell(x, y)
     local chunk = terrain.coordsToChunk(x, y)
     local mapc = terrain.generated.chunks[chunk]
-    if mapc == nil then
+    if mapc == nil or mapc[0] == nil then
+        local regen = mapc ~= nil
         mapc = terrain.worldgen(chunk)
         terrain.generated.chunks[chunk] = mapc
-        entities.generate(chunk)
-        items.generate(chunk)
+        if not regen then
+            entities.generate(chunk)
+            items.generate(chunk)
+        end
     end
     return mapc[y % 16][x % 16]
 end
