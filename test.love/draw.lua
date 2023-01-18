@@ -156,7 +156,8 @@ function drawtile(x, y, cell, tick)
 				16
 			)
 			love.graphics.setColor(1,1,1)
-			love.graphics.draw(item.t.frames[1+(tick % #item.t.frames)], xo - 16, yo - (36 + math.cos(tick/2)*4), 0, 2)
+			local src = items.types[item.t]
+			love.graphics.draw(src.frames[1+(tick % #src.frames)], xo - 16, yo - (36 + math.cos(tick/2)*4), 0, 2)
 		end
 	end
 end

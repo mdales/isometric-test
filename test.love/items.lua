@@ -45,7 +45,7 @@ function items.generate(chunk)
 		local t = terrain.getcell(cx, cy)
 		if t.block.passable then
 			table.insert(items.instances, {
-				t = items.types[math.floor(math.random() * #items.types) + 1],
+				t = math.floor(math.random() * #items.types) + 1,
 				cx = cx,
 				cy = cy,
 				mode = 0

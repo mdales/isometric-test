@@ -22,6 +22,7 @@ end
 
 function love.quit()
     entities.save()
+    items.save()
     terrain.save()
 end
 
