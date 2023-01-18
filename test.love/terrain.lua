@@ -118,15 +118,17 @@ function terrain.worldgen(chunk)
             local block = terrain.blocks.grass
             local h = 3 + math.floor(perlin:noise(xc + (x / 16), yc + (y / 16), terrain.generated.seed) * 8)
             local t = perlin:noise(xc + (x / 16), yc + (y / 16), terrain.generated.seed + 20)
-            if h > 0 then
-                if t > 0.3 then
-                    block = terrain.blocks.forest
-                elseif t < -0.5 then
-                    block = terrain.blocks.rock
-                    h = h + math.floor((math.abs(t) - 0.5) * 40)
-                end
+            if t < -0.5 then
+                block = terrain.blocks.rock
+                h = h + math.floor((math.abs(t) - 0.5) * 40)
             else
-                block = terrain.blocks.water
+                if h > 0 then
+                    if t > 0.3 then
+                        block = terrain.blocks.forest
+                    end
+                else
+                    block = terrain.blocks.water
+                end
             end
             r[x] = {height=h, block=block}
         end
