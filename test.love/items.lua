@@ -5,6 +5,8 @@ items = {
 	instances = {}
 }
 
+items_save_name = "items.sav"
+
 function items.load()
 	table.insert(items.types, items.init_item("Collectables/SpriteSheets/Items_BlueGem.png", 4))
 	table.insert(items.types, items.init_item("Collectables/SpriteSheets/Items_Book.png"))
@@ -19,9 +21,14 @@ function items.load()
 	table.insert(items.types, items.init_item("Collectables/SpriteSheets/Items_Ring.png", 4))
 	table.insert(items.types, items.init_item("Collectables/SpriteSheets/Items_Scroll.png"))
 	table.insert(items.types, items.init_item("Collectables/SpriteSheets/Items_Star.png"))
+
+	if love.filesystem.getInfo(items_save_name) then
+		items.instances = TSerial.unpack(love.filesystem.read(items_save_name))
+	end
 end
 
 function items.save()
+	love.filesystem.write(items_save_name, TSerial.pack(items.instances))
 end
 
 function items.generate(chunk)
