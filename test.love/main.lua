@@ -10,6 +10,10 @@ alert = false
 show_map = false
 
 function love.load()
+    w, h, flags = love.window.getMode()
+    flags.resizable = true
+    love.window.setMode(w, h, flags)
+
     terrain.load()
     items.load()
     entities.load()

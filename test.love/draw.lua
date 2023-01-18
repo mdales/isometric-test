@@ -52,18 +52,18 @@ function drawtile(x, y, cell, tick)
 	local h = block.height(cell.height)
 	local tree = block.tree
 
-	local player = x==6 and y==6
+	local player = x==0 and y==0
 	local xo = (W / 2) + (x * hs) - (y * hs)
-	local yb = (H / 2) - ((x * vs) + (y * vs)) + (13*vs)
+	local yb = (H / 2) - ((x * vs) + (y * vs)) -- used to have offset here
 	local yo = yb - (h * ds)
 
 
 	local occludes = false
-	if math.abs(x-y)<2 and ((x < 6) or (y < 6)) then
+	if math.abs(x-y)<2 and ((x < 0) or (y < 0)) then
 
 		local c = terrain.getcell(entities.player.cx, entities.player.cy)
 		local ch = c.block.height(c.height)
-		local cyb = (H / 2) - ((6 * vs) + (6 * vs)) + (13 * vs)
+		local cyb = (H / 2) - ((0 * vs) + (0 * vs))
 		local cyo = cyb - (ch * ds)
 
 		local xd = ds
@@ -138,7 +138,7 @@ function drawtile(x, y, cell, tick)
 
 	for i=1,#entities.npcs do
 	  local e=entities.npcs[i]
-	  if e.cx==entities.player.cx+x-6 and e.cy==entities.player.cy+y-6 then
+	  if e.cx==entities.player.cx+x and e.cy==entities.player.cy+y then
 		love.graphics.setColor(e.hue)
 		love.graphics.draw(draw.frames[e.mode+1][(((e.cd - 1) * 2) + 1) % 8], xo - 16, yo-32, 0, 2)
 	  end
@@ -146,7 +146,7 @@ function drawtile(x, y, cell, tick)
 
 	for i=1,#items.instances do
 		local item = items.instances[i]
-		if item.cx==entities.player.cx+x-6 and item.cy==entities.player.cy+y-6 then
+		if item.cx==entities.player.cx+x and item.cy==entities.player.cy+y then
 			love.graphics.setColor(0,0,0,0.3)
 			love.graphics.ellipse(
 				"fill",
@@ -162,10 +162,13 @@ function drawtile(x, y, cell, tick)
 end
 
 function draw.grid(tick)
-	for y = entities.player.cy + 6, entities.player.cy - 6, -1 do
-		for x = entities.player.cx + 6, entities.player.cx - 6, -1 do
+	local W, H = love.graphics.getDimensions()
+	local tilewidth = math.floor((W - hs) / (2 * hs * 2))
+
+	for y = entities.player.cy + tilewidth, entities.player.cy - tilewidth, -1 do
+		for x = entities.player.cx + tilewidth, entities.player.cx - tilewidth, -1 do
 			local c = terrain.getcell(x, y)
-			drawtile(x - entities.player.cx + 6, y - entities.player.cy + 6, c, tick)
+			drawtile(x - entities.player.cx, y - entities.player.cy, c, tick)
 		end
 	end
 end
