@@ -284,11 +284,11 @@ function draw:map()
 
 	for chunk, _ in pairs(terrain.generated.chunks) do
 		local xc, yc = terrain.chunkToCoords(chunk)
-		yc = yc * 16
-		xc = xc * 16
+		yc = yc * terrain.chunksize
+		xc = xc * terrain.chunksize
 
-		for y = 0, 15 do
-			for x = 0, 15 do
+		for y = 0, (terrain.chunksize-1) do
+			for x = 0, (terrain.chunksize-1) do
 				local ax = mx + ((xc + x) - cx)
 				local ay = my - ((yc + y) - cy)
 				local cell = terrain.getcell(xc + x, yc + y)
@@ -307,7 +307,7 @@ function draw:map()
 		love.graphics.setColor(e.hue)
 
 		-- if the entity is not in a loaded chunk, skip
-		local c = ((math.floor(e.cx / 16) + 0x7fff) * 2^16) + (math.floor(e.cy / 16) + 0x7fff)
+		local c = terrain.coordsToChunk(e.cx, e.cy)
 		if terrain.generated.chunks[c] ~= nil then
 			local ax = mx + (e.cx - cx)
 			local ay = my - (e.cy - cy)

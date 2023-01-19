@@ -40,8 +40,8 @@ function items.generate(chunk)
 	if chance < 0.10 then count = 2 end
 	if chance < 0.20 then count = 1 end
 	for i = 1, count do
-		local cx = math.floor(math.random() * 16) + (xc * 16)
-		local cy = math.floor(math.random() * 16) + (yc * 16)
+		local cx = math.floor(math.random() * terrain.chunksize) + (xc * terrain.chunksize)
+		local cy = math.floor(math.random() * terrain.chunksize) + (yc * terrain.chunksize)
 		local t = terrain.getcell(cx, cy)
 		if t.block.passable then
 			table.insert(items.instances, {

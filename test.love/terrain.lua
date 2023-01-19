@@ -6,6 +6,7 @@ terrain = {
         chunks = {},
         modified = {}
     },
+    chunksize = 16,
     blocks = {
         grass = {
             id = 0,
@@ -56,10 +57,10 @@ function terrain.load()
             table_map[block.id] = block
         end
         for k, chunk in pairs(terrain.generated.modified) do
-            for i = 0, 15 do
-                local row = chunk[i]
-                for j = 0, 15 do
-                    local tile = row[j]
+            for i = 1,terrain.chunksize do
+                local row = chunk[i-1]
+                for j = 1,terrain.chunksize do
+                    local tile = row[j-1]
                     local id = tile.block.id
                     tile.block = table_map[id]
                 end
@@ -85,7 +86,7 @@ function terrain.chunkToCoords(chunk)
 end
 
 function terrain.coordsToChunk(x, y)
-    return ((math.floor(x / 16) + 0x7fff) * 2^16) + (math.floor(y / 16) + 0x7fff)
+    return ((math.floor(x / terrain.chunksize) + 0x7fff) * 2^16) + (math.floor(y / terrain.chunksize) + 0x7fff)
 end
 
 function terrain.getcell(x, y)
@@ -100,7 +101,7 @@ function terrain.getcell(x, y)
             items.generate(chunk)
         end
     end
-    return mapc[y % 16][x % 16]
+    return mapc[y % terrain.chunksize][x % terrain.chunksize]
 end
 
 function terrain.markCellModified(x, y)
@@ -112,12 +113,12 @@ function terrain.worldgen(chunk)
     local xc, yc = terrain.chunkToCoords(chunk)
     local m = {}
 
-    for y = 0,15 do
+    for y = 0,(terrain.chunksize - 1) do
         local r = {}
-        for x = 0,15 do
+        for x = 0,(terrain.chunksize - 1) do
             local block = terrain.blocks.grass
-            local h = 3 + math.floor(perlin:noise(xc + (x / 16), yc + (y / 16), terrain.generated.seed) * 8)
-            local t = perlin:noise(xc + (x / 16), yc + (y / 16), terrain.generated.seed + 20)
+            local h = 3 + math.floor(perlin:noise(xc + (x / terrain.chunksize), yc + (y / terrain.chunksize), terrain.generated.seed) * 8)
+            local t = perlin:noise(xc + (x / terrain.chunksize), yc + (y / terrain.chunksize), terrain.generated.seed + 20)
             if t < -0.5 then
                 block = terrain.blocks.rock
                 h = h + math.floor((math.abs(t) - 0.5) * 40)

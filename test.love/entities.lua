@@ -27,7 +27,7 @@ function entities.load()
 	-- in for this to work
 	for y = -1, 1 do
 		for x = -1, 1 do
-			_ = terrain.getcell(entities.player.cx + (x * 6), entities.player.cy + (y * 6))
+			_ = terrain.getcell(entities.player.cx + (x * terrain.chunksize), entities.player.cy + (y * terrain.chunksize))
 		end
 	end
 	for i=1,100 do
@@ -51,8 +51,8 @@ function entities.generate(chunk)
 	if chance < 0.10 then count = 1 end
 	local prevcount = #entities.npcs
 	for i = 1, count do
-		local cx = math.floor(math.random() * 16) + (xc * 16)
-		local cy = math.floor(math.random() * 16) + (yc * 16)
+		local cx = math.floor(math.random() * terrain.chunksize) + (xc * terrain.chunksize)
+		local cy = math.floor(math.random() * terrain.chunksize) + (yc * terrain.chunksize)
 		local t = terrain.getcell(cx, cy)
 		if t.block.passable then
 			table.insert(entities.npcs, {
