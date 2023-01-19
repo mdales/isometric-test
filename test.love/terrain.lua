@@ -6,7 +6,7 @@ terrain = {
         chunks = {},
         modified = {}
     },
-    chunksize = 16,
+    chunksize = 128,
     perlinscale = 16,
     blocks = {
         grass = {
@@ -130,15 +130,15 @@ function terrain.worldgen(chunk)
             local mapx = xc * terrain.chunksize + x
             local mapy = yc * terrain.chunksize + y
 
-            -- local mapx = xc + (x / terrain.chunksize)
-            -- local mapy = yc + (y / terrain.chunksize)
-
-            local h = 3 + math.floor(
+            local roughnessscale = (terrain.perlinscale * 2/3) +
+                scaledperlinvalue(mapx, mapy, terrain.generated.seed * 2, terrain.perlinscale * 4) * (terrain.perlinscale * 1/3)
+            roughnessscale = math.ceil(roughnessscale)
+            local h = 2 + math.floor(
                 (
-                    scaledperlinvalue(mapx, mapy, terrain.generated.seed, terrain.perlinscale) +
-                    scaledperlinvalue(mapx, mapy, terrain.generated.seed, terrain.perlinscale * 4)
+                    scaledperlinvalue(mapx, mapy, terrain.generated.seed, roughnessscale) * 4 +   -- small scale gives bumps locally
+                    scaledperlinvalue(mapx, mapy, terrain.generated.seed, terrain.perlinscale * 8) * 8 -- grand scale undulations
                 )
-            * 4)
+            * 1)
             local t = scaledperlinvalue(mapx, mapy, terrain.generated.seed + 20, terrain.perlinscale)
             if t < -0.5 then
                 block = terrain.blocks.rock
