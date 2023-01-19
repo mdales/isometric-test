@@ -36,9 +36,7 @@ function items.generate(chunk)
 	local xc, yc = terrain.chunkToCoords(chunk)
 	local count = 0
 	local chance = math.random()
-	if chance < 0.05 then count = 3 end
-	if chance < 0.10 then count = 2 end
-	if chance < 0.20 then count = 1 end
+	count = math.floor(chance * (terrain.chunksize * terrain.chunksize / 512))
 	for i = 1, count do
 		local cx = math.floor(math.random() * terrain.chunksize) + (xc * terrain.chunksize)
 		local cy = math.floor(math.random() * terrain.chunksize) + (yc * terrain.chunksize)
