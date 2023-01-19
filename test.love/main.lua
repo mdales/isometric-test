@@ -142,11 +142,13 @@ function love.draw()
         love.graphics.setBackgroundColor(0.3, 0.3, 0.5)
     end
     -- love.graphics.setColor(1, 1, 1)
-    -- love.graphics.print(tostring(entities.player.cx)..", "..tostring(entities.player.cy), 10, 10)
     if entities.player.target == nil then
         draw.grid(tick)
         draw.compass()
-        if show_map then draw.map() end
+        if show_map then
+            draw.map()
+            love.graphics.print(tostring(entities.player.cx)..", "..tostring(entities.player.cy), 10, 10)
+        end
     else
         draw.busy()
     end
