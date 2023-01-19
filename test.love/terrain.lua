@@ -7,6 +7,7 @@ terrain = {
         modified = {}
     },
     chunksize = 16,
+    perlinscale = 16,
     blocks = {
         grass = {
             id = 0,
@@ -109,6 +110,14 @@ function terrain.markCellModified(x, y)
     terrain.generated.modified[chunk] = terrain.generated.chunks[chunk]
 end
 
+function scaledperlinvalue(mapx, mapy, z, perlinscale)
+    local perlinx = math.floor(mapx / perlinscale)
+    local perliny = math.floor(mapy / perlinscale)
+    local perlinoffsetx = (mapx % perlinscale) / perlinscale
+    local perlinoffsety = (mapy % perlinscale) / perlinscale
+    return perlin:noise(perlinx + perlinoffsetx, perliny + perlinoffsety, z)
+end
+
 function terrain.worldgen(chunk)
     local xc, yc = terrain.chunkToCoords(chunk)
     local m = {}
@@ -117,8 +126,20 @@ function terrain.worldgen(chunk)
         local r = {}
         for x = 0,(terrain.chunksize - 1) do
             local block = terrain.blocks.grass
-            local h = 3 + math.floor(perlin:noise(xc + (x / terrain.chunksize), yc + (y / terrain.chunksize), terrain.generated.seed) * 8)
-            local t = perlin:noise(xc + (x / terrain.chunksize), yc + (y / terrain.chunksize), terrain.generated.seed + 20)
+
+            local mapx = xc * terrain.chunksize + x
+            local mapy = yc * terrain.chunksize + y
+
+            -- local mapx = xc + (x / terrain.chunksize)
+            -- local mapy = yc + (y / terrain.chunksize)
+
+            local h = 3 + math.floor(
+                (
+                    scaledperlinvalue(mapx, mapy, terrain.generated.seed, terrain.perlinscale) +
+                    scaledperlinvalue(mapx, mapy, terrain.generated.seed, terrain.perlinscale * 4)
+                )
+            * 4)
+            local t = scaledperlinvalue(mapx, mapy, terrain.generated.seed + 20, terrain.perlinscale)
             if t < -0.5 then
                 block = terrain.blocks.rock
                 h = h + math.floor((math.abs(t) - 0.5) * 40)
